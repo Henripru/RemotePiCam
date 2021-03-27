@@ -2,6 +2,8 @@ import paho.mqtt.client as mqtt
 from PIL import Image
 import time
 import cv2 as cv
+from config import *  # Constants
+import math  # for tan
 
 # Constants
 BROKER = 'iot.cs.calvin.edu'
@@ -24,15 +26,24 @@ def on_message(client, data, msg):
         f.write(msg.payload)
         print("Image Received")
         f.close()
+
         original_image = cv.imread('image.jpg')
         grayscale_image = cv.cvtColor(original_image, cv.COLOR_BGR2GRAY)
         face_cascade = cv.CascadeClassifier(cv.data.haarcascades + "haarcascade_frontalface_default.xml")
         detected_faces = face_cascade.detectMultiScale(grayscale_image)
         if len(detected_faces) > 0:
             face_to_track = detected_faces[0]
+            # Extract the first x and y values
             x = face_to_track[0] + face_to_track[2]/2
             y = face_to_track[1] + face_to_track[3]/2
-            client.publish("RPC/position", str(x) + ',' + str(y), qos = QOS)
+            # Must act like center of image is (0,0) instead of corner
+            x -= CAM_X/2
+            y -= CAM_Y/2
+            # Convert the x and y values to an angle
+            delta_theta_x = math.atan(x * math.tan(54*math.pi/180)/CAM_X) * (180/math.pi) # convert to degrees at the end
+            delta_theta_y = math.atan(y * math.tan(41*math.pi/180)/CAM_Y) * (180/math.pi) # convert to degrees at the end
+
+            client.publish("RPC/position", str(delta_theta_x) + ',' + str(delta_theta_y), qos = QOS)
 
 # Setup MQTT client and callbacks
 client = mqtt.Client()
