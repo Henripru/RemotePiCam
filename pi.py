@@ -30,13 +30,13 @@ client.connect(BROKER, PORT, 60)
 # Connect to camera
 camera = PiCamera()
 
+
 # Main Loop
 try:
     camera.start_preview()
     while True:
         client.loop(timeout=5.0)
         camera.capture('image.jpg')
-        time.sleep(5)
         f = open("image.jpg", "rb")
         fileContent = f.read()
         byteArr = bytearray(fileContent)
