@@ -33,7 +33,7 @@ def on_message(client, data, msg):
         detected_faces = face_cascade.detectMultiScale(grayscale_image)
         if len(detected_faces) > 0:
             face_to_track = detected_faces[0]
-            face_to_track = [CAM_X, CAM_Y, 0, 0]
+            # face_to_track = [CAM_X, CAM_Y, 0, 0]
             # Extract the first x and y values
             x = face_to_track[0] + face_to_track[2]/2
             y = face_to_track[1] + face_to_track[3]/2
