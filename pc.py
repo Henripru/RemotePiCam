@@ -1,5 +1,3 @@
-# CS326 MQTT Lab
-import RPi.GPIO as GPIO
 import paho.mqtt.client as mqtt
 from PIL import Image
 import time
