@@ -4,7 +4,6 @@ import time
 import cv2 as cv
 from config import *  # Constants
 import math  # for tan
-import pigpio
 
 # Constants
 BROKER = 'iot.cs.calvin.edu'
@@ -13,16 +12,6 @@ QOS = 0
 USERNAME = 'cs326' # broker username (if required)
 PASSWORD = 'piot' # broker password (if required)
 MAIN_TOPIC = 'RPC' # topic to publish under
-'''
-PWM0_GPIO = 12
-PWM1_GPIO = 13
-
-pi = pigpio.pi()
-if not pi.connected():
-    exit(0)
-
-pi.set_PWM_frequency(SERVO, 50)
-'''
 
 # Callback when a connection has been established with the MQTT broker
 def on_connect(client, userdata, rc, *extra_params):
