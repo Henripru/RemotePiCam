@@ -4,6 +4,7 @@ import time
 import cv2 as cv
 from config import *  # Constants
 import math  # for tan
+import pigpio
 
 # Constants
 BROKER = 'iot.cs.calvin.edu'
@@ -12,6 +13,16 @@ QOS = 0
 USERNAME = 'cs326' # broker username (if required)
 PASSWORD = 'piot' # broker password (if required)
 MAIN_TOPIC = 'RPC' # topic to publish under
+'''
+PWM0_GPIO = 12
+PWM1_GPIO = 13
+
+pi = pigpio.pi()
+if not pi.connected():
+    exit(0)
+
+pi.set_PWM_frequency(SERVO, 50)
+'''
 
 # Callback when a connection has been established with the MQTT broker
 def on_connect(client, userdata, rc, *extra_params):
@@ -33,6 +44,7 @@ def on_message(client, data, msg):
         detected_faces = face_cascade.detectMultiScale(grayscale_image)
         if len(detected_faces) > 0:
             face_to_track = detected_faces[0]
+            face_to_track = [CAM_X, CAM_Y, 0, 0]
             # Extract the first x and y values
             x = face_to_track[0] + face_to_track[2]/2
             y = face_to_track[1] + face_to_track[3]/2
@@ -40,8 +52,8 @@ def on_message(client, data, msg):
             x -= CAM_X/2
             y -= CAM_Y/2
             # Convert the x and y values to an angle
-            delta_theta_x = math.atan(x * math.tan(54*math.pi/180)/CAM_X) * (180/math.pi) # convert to degrees at the end
-            delta_theta_y = math.atan(y * math.tan(41*math.pi/180)/CAM_Y) * (180/math.pi) # convert to degrees at the end
+            delta_theta_x = math.atan(x * 2*math.tan(27*math.pi/180)/CAM_X) * (180/math.pi) # convert to degrees at the end
+            delta_theta_y = math.atan(y * 2*math.tan(20.5*math.pi/180)/CAM_Y) * (180/math.pi) # convert to degrees at the end
 
             client.publish("RPC/position", str(delta_theta_x) + ',' + str(delta_theta_y), qos = QOS)
 
