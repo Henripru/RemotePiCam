@@ -25,7 +25,6 @@ def on_message(client, data, msg):
         f.close()
         image = Image.open('image.jpg')
         image.show()
-        time.sleep(5)
         image.close()
 
 # Setup MQTT client and callbacks
