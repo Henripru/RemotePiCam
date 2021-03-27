@@ -4,6 +4,7 @@ import paho.mqtt.client as mqtt
 from picamera import PiCamera
 import time
 import pigpio
+import cv2 as cv
 
 # Constants
 BROKER = 'iot.cs.calvin.edu' # CS MQTT broker
@@ -65,6 +66,7 @@ def on_message(client, data, msg):
         stringtuple = msg.payload.decode().split(',')
         current_angle_x = set_x(current_angle_x, float(stringtuple[0]))
         current_angle_y = set_y(current_angle_y, float(stringtuple[1]))
+        print(current_angle_x, ',', current_angle_y)
 
 # Setup MQTT client and callbacks
 client = mqtt.Client()
@@ -82,15 +84,19 @@ camera = PiCamera()
 try:
     camera.start_preview()
     while True:
-        client.loop(timeout=5.0)
+        client.loop(timeout=1.0)
         camera.capture('image.jpg')
-        f = open("image.jpg", "rb")
-        fileContent = f.read()
-        byteArr = bytearray(fileContent)
-        client.publish("RPC/image", byteArr, qos=QOS)
-
+        time.sleep(1)   
+        original_image = cv.imread('image.jpg')
+        grayscale_image = cv.cvtColor(original_image, cv.COLOR_BGR2GRAY)
+        face_cascade = cv.CascadeClassifier(cv.data.haarcascades + "haarcascade_frontalface_default.xml")
+        detected_faces = face_cascade.detectMultiScale(grayscale_image)
+        
+        if len(detected_faces) > 0:
+            payload = str(detected_faces[0][0]) + ',' + str(detected_faces[0][1]) + ',' + str(detected_faces[0][2]) + ',' + str(detected_faces[0][3])
+            print(payload)
+            client.publish("RPC/face", payload, qos=QOS)
 
 except KeyboardInterrupt:
     client.disconnect()
-    camera.stop_preview()
     print("Done")
