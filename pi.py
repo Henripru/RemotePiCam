@@ -34,8 +34,8 @@ try:
     camera.start_preview()
     while True:
         client.loop(timeout=5.0)
-        camera.capture('/tmp/image.jpg')
-        f = open("/tmp/image.jpg", "rb")
+        camera.capture('image.jpg')
+        f = open("image.jpg", "rb")
         fileContent = f.read()
         byteArr = bytearray(fileContent)
         client.publish("RPC/image", byteArr, qos=QOS)

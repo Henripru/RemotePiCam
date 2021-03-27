@@ -19,7 +19,7 @@ def on_connect(client, userdata, rc, *extra_params):
 def on_message(client, data, msg):
     if msg.topic == "RPC/image":
         # Create a file with write byte permission
-        f = open('./tmp/image.jpg', "wb")
+        f = open('image.jpg', "wb")
         f.write(msg.payload)
         print("Image Received")
         f.close()
